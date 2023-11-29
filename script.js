@@ -1,47 +1,34 @@
 function solve() {
-    var intervalAInput = document.getElementById("intervalA").value;
-    var intervalBInput = document.getElementById("intervalB").value;
+    var initialApproximationInput = document.getElementById("initialApproximation").value;
     var iterationsInput = document.getElementById("iterations").value;
     
-    var a = parseFloat(intervalAInput);
-    var b = parseFloat(intervalBInput);
+    var initialApproximation = parseFloat(initialApproximationInput);
     var iterations = parseInt(iterationsInput);
     
-    if (isNaN(a) || isNaN(b) || isNaN(iterations)) {
+    if (isNaN(initialApproximation) || isNaN(iterations)) {
         alert("Por favor, ingrese valores válidos.");
         return;
     }
     
-    var result = bisectionMethod(a, b, iterations);
+    var result = newtonMethod(initialApproximation, iterations);
     
     document.getElementById("result").value = result.toFixed(6);
 }
 
-function bisectionMethod(a, b, iterations) {
-    var fa = Math.pow(a, a) - 100;
-    var fb = Math.pow(b, b) - 100;
-    
-    if (fa * fb >= 0) {
-        alert("El intervalo no cumple con los requisitos del método de la bisección.");
-        return NaN;
-    }
+function newtonMethod(initialApproximation, iterations) {
+    var x = initialApproximation;
     
     for (var i = 0; i < iterations; i++) {
-        var c = (a + b) / 2;
-        var fc = Math.pow(c, c) - 100;
+        var fx = Math.cos(x) - Math.pow(x, 3);
+        var fxPrime = -Math.sin(x) - 3 * Math.pow(x, 2);
         
-        if (Math.abs(fc) < 1e-6) {
-            return c;
+        if (fxPrime === 0) {
+            alert("La derivada se anula en el punto actual. No se puede continuar con el método de Newton.");
+            return NaN;
         }
         
-        if (fa * fc < 0) {
-            b = c;
-            fb = fc;
-        } else {
-            a = c;
-            fa = fc;
-        }
+        x = x - fx / fxPrime;
     }
     
-    return (a + b) / 2;
+    return x;
 }
